@@ -1,0 +1,55 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+  shadowDatabaseUrl = env("SHADOW_DATABASE_URL")
+}
+
+model User {
+  id             Int                    @id @default(autoincrement())
+  name           String
+  email          String                 @unique
+  password       String
+  lists          TaskList[]             @relation("CreatorLists")
+  collaborations TaskListCollaborator[] @relation("UserCollaborations")
+}
+
+model TaskList {
+  id            Int                    @id @default(autoincrement())
+  title         String
+  createdAt     DateTime               @default(now())
+  creatorId     Int
+  creator       User                   @relation(fields: [creatorId], references: [id], name: "CreatorLists")
+  tasks         Task[]
+  collaborators TaskListCollaborator[] @relation("TaskListCollaborations")
+}
+
+model Task {
+  id          Int      @id @default(autoincrement())
+  title       String
+  description String
+  completed   Boolean  @default(false)
+  listId      Int
+  list        TaskList @relation(fields: [listId], references: [id])
+  createdAt   DateTime @default(now())
+}
+
+model TaskListCollaborator {
+  id     Int      @id @default(autoincrement())
+  listId Int
+  userId Int
+  list   TaskList @relation(fields: [listId], references: [id], name: "TaskListCollaborations")
+  user   User     @relation(fields: [userId], references: [id], name: "UserCollaborations")
+
+  @@unique([listId, userId])
+}
