@@ -5,8 +5,9 @@
   "main": "index.js",
   "scripts": {
     "build": "tsc",
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "ts-node-dev --respawn --transpile-only src/index.ts",
+    "predev": "prisma generate",
+    "dev": "npm run build && node dist/index.js",
+    "dev:fast": "ts-node-dev --respawn src/index.ts",
     "start": "node dist/index.js"
   },
   "keywords": [],

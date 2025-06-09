@@ -27,3 +27,7 @@ app.use((err: any, req: Request, res: Response, next: NextFunction) => {
 app.listen(env.port, () => {
   console.log(`🚀 Servidor rodando em http://localhost:${env.port}`);
 });
+
+app.get("/health", (req, res) => {
+  res.status(200).json({ status: "OK" });
+})
